@@ -105,6 +105,13 @@ class PasswordManager:
     def get_credential(self, service):
         return self.vault.get(service)
 
+    def delete_credential(self, service):
+        if service in self.vault:
+            del self.vault[service]
+            self.save_vault()
+            return True
+        return False
+
     def list_services(self):
         return list(self.vault.keys())
 

@@ -74,5 +74,22 @@ class TestPasswordManager(unittest.TestCase):
         #     self.pm.generate_password(use_upper=False, use_digits=False, use_special=False, length=10)
         pass
 
+    def test_delete_credential(self):
+        password = "TestPassword123!"
+        self.pm.setup_master_password(password)
+        
+        self.pm.add_credential("google", "user", "pw")
+        self.assertIsNotNone(self.pm.get_credential("google"))
+        
+        # Delete existing
+        result = self.pm.delete_credential("google")
+        self.assertTrue(result)
+        self.assertIsNone(self.pm.get_credential("google"))
+        
+        # Delete non-existent
+        result = self.pm.delete_credential("yahoo")
+        self.assertFalse(result)
+
+
 if __name__ == '__main__':
     unittest.main()

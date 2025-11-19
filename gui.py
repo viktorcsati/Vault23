@@ -170,6 +170,10 @@ class MainWindow(QMainWindow):
         refresh_btn.clicked.connect(self.populate_table)
         btn_layout.addWidget(refresh_btn)
         
+        delete_btn = QPushButton("Delete Credential")
+        delete_btn.clicked.connect(self.delete_credential_ui)
+        btn_layout.addWidget(delete_btn)
+        
         change_pw_btn = QPushButton("Change Master Password")
         change_pw_btn.clicked.connect(self.change_master_password)
         btn_layout.addWidget(change_pw_btn)
@@ -238,6 +242,26 @@ class MainWindow(QMainWindow):
                 self.populate_table()
             else:
                 QMessageBox.warning(self, "Error", "All fields are required.")
+
+    def delete_credential_ui(self):
+        current_row = self.table.currentRow()
+        if current_row < 0:
+            QMessageBox.warning(self, "Error", "Please select a credential to delete.")
+            return
+            
+        service = self.table.item(current_row, 0).text()
+        
+        reply = QMessageBox.question(self, 'Confirm Delete', 
+                                     f"Are you sure you want to delete the credential for '{service}'?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, 
+                                     QMessageBox.StandardButton.No)
+                                     
+        if reply == QMessageBox.StandardButton.Yes:
+            if self.pm.delete_credential(service):
+                self.populate_table()
+                QMessageBox.information(self, "Success", "Credential deleted.")
+            else:
+                QMessageBox.warning(self, "Error", "Failed to delete credential.")
 
     def copy_password(self, row, column):
         if column == 2: # Password column
